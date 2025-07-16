@@ -23,6 +23,12 @@ let sketch = (p) => {
   let img1;
   let finalImage;
   let restartTimeoutId;
+  let cruzImg;
+
+   // Variable cruz
+  let mostrarCruz = false;
+  let cruzX = 10;
+  let cruzY = 0;
 
   // AUDIO
   let osc, noise;
@@ -40,7 +46,8 @@ let sketch = (p) => {
     glitchOverlay = p.loadImage('img_28.jpeg');
     wall = p.loadImage('wall2.gif');
     img1 = p.loadImage('img1.png');
-    finalImage = p.loadImage('cargafinal.png');
+    finalImage = p.loadImage('cargafinal1.png');
+    cruzImg = p.loadImage('d.jpg');
     for (let path of imagePaths) {
       bgImages.push(p.loadImage(path));
     }
@@ -95,9 +102,21 @@ let sketch = (p) => {
     }
 
     if (isDead) {
-      p.image(finalImage, 0, 0, p.width, p.height);
-      return;
-    }
+      p.image(cruzImg, 0, 0, p.width, p.height);
+
+      if (mostrarCruz === true) {
+        p.blendMode(p.ADD);
+        p.image(finalImage, cruzX, cruzY, 1600, 2000);
+        p.blendMode(p.BLEND);
+      }
+
+      /* if (resetTimerStarted && p.millis() - resetStartTime >= 120000) {
+        resetSketch();
+      }
+ */
+      return;
+    }
+
 
     if (!invertMode && p.random(1) < 0.03) {
       invertMode = true;
@@ -151,7 +170,15 @@ let sketch = (p) => {
   }
 
   p.touchStarted = () => {
-    if (isDead) return false;
+    
+    if (isDead) {
+      mostrarCruz = true;
+      cruzX = p.mouseX;
+      cruzY = p.mouseY;
+      return false;
+    }
+
+    //if (isDead || loadedImages < totalImages) return false;
 
     if (!isAudioStarted) {
       p.userStartAudio();
@@ -207,6 +234,11 @@ let sketch = (p) => {
 
     return false;
   };
+     p.mouseReleased = function () {
+    if (isDead) {
+      mostrarCruz = false;
+    }
+  };
 
   function triggerDeath() {
     isDead = true;
